@@ -10,7 +10,7 @@ public class MasterController : MonoBehaviour
 
 	public GameObject[] PlayerPrefabs;
 	public GameObject[] EnemyPrefabs;
-	public GameObject CurrentPlayer;
+	[HideInInspector]public GameObject CurrentPlayer;
 	Invector.vHealthController HealthTemp;
 	public Transform SpawnPoint;
 	int Score = 0;
@@ -19,12 +19,13 @@ public class MasterController : MonoBehaviour
 	public Text GameOverScoreText;
 	public Text GameOverHighscoreText;
 	public GameObject HighscoreMessage;
+	public GameObject LoadingPanel;
 
 
 	void Awake ()
 	{
 		if (CurrentPlayer == null && EnemyPrefabs != null) {
-			CurrentPlayer = Instantiate (PlayerPrefabs [PlayerPrefs.GetInt ("playerselected")], SpawnPoint.transform.position, SpawnPoint.transform.rotation) as GameObject;
+			CurrentPlayer = Instantiate (PlayerPrefabs [PlayerPrefs.GetInt ("selectedplayer")], SpawnPoint.transform.position, SpawnPoint.transform.rotation) as GameObject;
 		}
 		HealthTemp = CurrentPlayer.GetComponent <vHealthController> ();
 	}
@@ -80,6 +81,7 @@ public class MasterController : MonoBehaviour
 
 		if (Score > PlayerPrefs.GetInt ("highscore")) {
 			PlayerPrefs.SetInt ("highscore", Score);
+			HighscoreMessage.SetActive (true);
 		}
 
 		GameOverScoreText.text = Score.ToString ();
@@ -93,7 +95,12 @@ public class MasterController : MonoBehaviour
 	{
 		switch (x) {
 		case 0: //Restart
+			LoadingPanel.SetActive (true);
 			SceneManager.LoadSceneAsync (SceneManager.GetActiveScene ().buildIndex);
+			break;
+		case 1: //Exit
+			LoadingPanel.SetActive (true);
+			SceneManager.LoadSceneAsync (0);
 			break;
 		}
 	}
