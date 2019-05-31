@@ -20,6 +20,7 @@ public class MasterController : MonoBehaviour
 	public Text GameOverHighscoreText;
 	public GameObject HighscoreMessage;
 	public GameObject LoadingPanel;
+    public NetworkCommandController command;
 
 
 	void Awake ()
@@ -114,7 +115,8 @@ public class MasterController : MonoBehaviour
 
 	public void PlayerAttack ()
 	{
-		CurrentPlayer.transform.GetChild (0).transform.gameObject.SetActive (true);
+        //CurrentPlayer.transform.GetChild (0).transform.gameObject.SetActive (true);
+        //command.CmdHello(CurrentPlayer);
 	}
 
 }

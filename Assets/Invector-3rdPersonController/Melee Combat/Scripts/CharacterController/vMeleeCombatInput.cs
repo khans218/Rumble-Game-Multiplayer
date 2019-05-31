@@ -121,6 +121,7 @@ namespace Invector.vCharacterController
         public virtual void TriggerStrongAttack()
         {
             cc.animator.SetInteger("AttackID", meleeManager.GetAttackID());
+            cc.animator.SetBool("Attacking", true);
             //cc.animator.SetTrigger("StrongAttack");
             player.AttackTrigger();
         }

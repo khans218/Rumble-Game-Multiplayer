@@ -6,16 +6,6 @@ public class TurnOffThis : MonoBehaviour {
 
     public float Time;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
     private void OnEnable()
     {
         Invoke("TurnOff", Time);
