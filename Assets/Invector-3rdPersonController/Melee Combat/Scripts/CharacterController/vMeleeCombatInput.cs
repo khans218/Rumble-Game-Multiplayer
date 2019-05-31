@@ -11,7 +11,7 @@ namespace Invector.vCharacterController
     [vClassHeader("MELEE INPUT MANAGER", iconName = "inputIcon")]
     public class vMeleeCombatInput : vThirdPersonInput, vIMeleeFighter
     {
-       
+
         #region Variables                
         [vEditorToolbar("Inputs")]
         [Header("Melee Inputs")]
@@ -40,6 +40,7 @@ namespace Invector.vCharacterController
         }
 
         #endregion
+        PlayerSetup player;
 
         public virtual bool lockInventory
         {
@@ -51,6 +52,10 @@ namespace Invector.vCharacterController
 
         protected override void FixedUpdate()
         {
+            if (player == null)
+            {
+                player = GetComponent<PlayerSetup>();
+            }
             UpdateMeleeAnimations();
             UpdateAttackBehaviour();
             base.FixedUpdate();
@@ -116,7 +121,8 @@ namespace Invector.vCharacterController
         public virtual void TriggerStrongAttack()
         {
             cc.animator.SetInteger("AttackID", meleeManager.GetAttackID());
-            cc.animator.SetTrigger("StrongAttack");
+            //cc.animator.SetTrigger("StrongAttack");
+            player.AttackTrigger();
         }
 
         /// <summary>

@@ -24,10 +24,12 @@ public class MasterController : MonoBehaviour
 
 	void Awake ()
 	{
+        /*
 		if (CurrentPlayer == null && EnemyPrefabs != null) {
 			CurrentPlayer = Instantiate (PlayerPrefabs [PlayerPrefs.GetInt ("selectedplayer")], SpawnPoint.transform.position, SpawnPoint.transform.rotation) as GameObject;
 		}
 		HealthTemp = CurrentPlayer.GetComponent <vHealthController> ();
+        */
 	}
 
 	// Use this for initialization
@@ -47,6 +49,11 @@ public class MasterController : MonoBehaviour
 			Time.timeScale = 1f;
 		}
 
+        if (HealthTemp == null)
+        {
+            if (CurrentPlayer == null) return;
+            HealthTemp = CurrentPlayer.GetComponent<vHealthController>();
+        }
 
 		if (HealthTemp.currentHealth <= 0) {
 			CallGameOver (5);
