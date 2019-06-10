@@ -7,16 +7,28 @@ public class SphereManager : MonoBehaviour {
 
     private bool OneTime = false;
     Invector.vCharacterController.AI.v_AIController HealthTemp;
+    MasterController master;
+    public PlayerSetup setup;
 
     // Use this for initialization
     void Start () {
         Physics.IgnoreCollision(this.transform.GetComponentInParent<CapsuleCollider>(), GetComponent<Collider>(),true);
+        master = GameObject.Find("MasterController").GetComponent<MasterController>();
     }
 	
 	// Update is called once per frame
 	void Update () {
 		
 	}
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!setup.isLocalPlayer) return;
+        if (other.GetComponent<CustomEnemyManager>())
+        {
+            master.ScorePlusPlus();
+        }
+    }
 
     //private void OnTriggerEnter(Collider other)
     //{

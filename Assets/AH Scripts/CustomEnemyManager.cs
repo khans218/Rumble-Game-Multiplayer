@@ -9,7 +9,8 @@ public class CustomEnemyManager : MonoBehaviour {
     public Rigidbody Body;
     CapsuleCollider Col;
     bool TagChanged = false;
-
+    [SerializeField]
+    Behaviour thirdPersonController;
 
     // Use this for initialization
     void Start () {
@@ -30,6 +31,10 @@ public class CustomEnemyManager : MonoBehaviour {
         {
             TagChanged = true;
             Body.tag = "MyEnemyTag";
+            if (thirdPersonController != null)
+            {
+                thirdPersonController.enabled = true;
+            }
             HealthTemp.CustomCurrentHealth(0f);
             Invoke("ApplyExtraForce", 0.1f);
         }
@@ -47,6 +52,11 @@ public class CustomEnemyManager : MonoBehaviour {
     void ApplyExtraForce()
     {
         Body.AddRelativeForce(new Vector3(0,35000,-65000));
+    }
+
+    public bool Hit()
+    {
+        return TagChanged;
     }
 
 }

@@ -15,6 +15,8 @@ public class PlayerSetup : NetworkBehaviour {
         netAnim = GetComponent<NetworkAnimator>();
         if (!isLocalPlayer)
         {
+            this.tag = "Enemy";
+            this.gameObject.layer = 9;
             foreach (Behaviour component in ComponentsToDisable)
             {
                 component.enabled = false;

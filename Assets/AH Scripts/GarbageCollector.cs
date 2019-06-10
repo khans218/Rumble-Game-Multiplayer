@@ -22,17 +22,23 @@ public class GarbageCollector : MonoBehaviour {
         if (other.tag == "MyEnemyTag")
         {
             Destroy(other.gameObject.transform.parent.gameObject);
-            MasterTemp.CallNewEnemyCreation();
+            //MasterTemp.CallNewEnemyCreation();
         }
         if (other.tag == "OtherEnemyTag")
         {
             Destroy(other.gameObject.transform.parent.gameObject);
-            MasterTemp.CallNewEnemyCreation();
+            //MasterTemp.CallNewEnemyCreation();
         }
 
         if (other.tag == "Player")
         {
-            MasterTemp.CallGameOver(2);
+            if (MasterTemp.CurrentPlayer != other.transform)
+            {
+                Destroy(other.gameObject.transform.parent.gameObject);
+            } else
+            {
+                MasterTemp.CallGameOver(2);
+            }
         }
 
     }
