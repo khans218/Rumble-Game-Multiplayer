@@ -2,17 +2,45 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
+
+
 
 public class PlayerSetup : NetworkBehaviour {
 
     [SerializeField]
     Behaviour[] ComponentsToDisable;
     NetworkAnimator netAnim;
-
     MasterController master;
-	// Use this for initialization
-	void Start () {
+    PlayersManager playersManager;
+
+    public class PlayerInfo
+    {
+        string name;
+        GameObject prefab;
+
+        public PlayerInfo(string _name, GameObject _prefab)
+        {
+            name = _name;
+            prefab = _prefab;
+        }
+
+        public string getName() { return name; }
+        public GameObject getPrefab() { return prefab; }
+    }
+    PlayerInfo myPlayer;
+    public Text name;
+
+    // Use this for initialization
+    void Start () {
+        playersManager = GameObject.Find("PlayerList").GetComponent<PlayersManager>();
+        transform.parent = playersManager.transform;
+
+        myPlayer = new PlayerInfo(name.text, this.gameObject);
+        playersManager.AddPlayer(myPlayer);
+
         netAnim = GetComponent<NetworkAnimator>();
+
         if (!isLocalPlayer)
         {
             this.tag = "Enemy";
@@ -33,4 +61,10 @@ public class PlayerSetup : NetworkBehaviour {
         if (!isLocalPlayer) return;
         netAnim.SetTrigger("StrongAttack");
     }
+
+    private void OnDestroy()
+    {
+        playersManager.RemovePlayer(transform.GetSiblingIndex(), myPlayer);
+    }
+
 }

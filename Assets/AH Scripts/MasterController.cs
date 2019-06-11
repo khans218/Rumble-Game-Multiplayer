@@ -20,10 +20,9 @@ public class MasterController : MonoBehaviour
 	public Text GameOverHighscoreText;
 	public GameObject HighscoreMessage;
 	public GameObject LoadingPanel;
-    public NetworkCommandController command;
+    public NetworkController net;
 
-
-	void Awake ()
+    void Awake ()
 	{
         /*
 		if (CurrentPlayer == null && EnemyPrefabs != null) {
@@ -54,6 +53,10 @@ public class MasterController : MonoBehaviour
         {
             if (CurrentPlayer == null) return;
             HealthTemp = CurrentPlayer.GetComponent<vHealthController>();
+            if (CurrentPlayer.GetComponent<PlayerSetup>().isServer)
+            {
+                net.waitingPannel.SetActive(false);
+            }
         }
 
 		if (HealthTemp.currentHealth <= 0) {
@@ -115,8 +118,7 @@ public class MasterController : MonoBehaviour
 
 	public void PlayerAttack ()
 	{
-        //CurrentPlayer.transform.GetChild (0).transform.gameObject.SetActive (true);
-        //command.CmdHello(CurrentPlayer);
+
 	}
 
 }
