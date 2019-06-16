@@ -6,13 +6,11 @@ public class NetworkController : NetworkBehaviour {
 
     public GameObject hostPannel;
     public GameObject waitingPannel;
-    public GameObject playerListPannel;
+    public GameObject StartPannel;
 
     [ClientRpc]
     public void RpcStartGame()
     {
-        hostPannel.SetActive(false);
-        waitingPannel.SetActive(false);
-        playerListPannel.SetActive(false);
+        StartPannel.SetActive(false);
     }
 }

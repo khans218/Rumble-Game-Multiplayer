@@ -33,11 +33,11 @@ public class PlayerSetup : NetworkBehaviour {
 
     // Use this for initialization
     void Start () {
-        playersManager = GameObject.Find("PlayerList").GetComponent<PlayersManager>();
-        transform.parent = playersManager.transform;
+        //playersManager = GameObject.Find("PlayerList").GetComponent<PlayersManager>();
+        //transform.parent = playersManager.transform;
 
-        myPlayer = new PlayerInfo(name.text, this.gameObject);
-        playersManager.AddPlayer(myPlayer);
+        //myPlayer = new PlayerInfo(name.text, this.gameObject);
+        //playersManager.AddPlayer(myPlayer);
 
         netAnim = GetComponent<NetworkAnimator>();
 
@@ -64,7 +64,7 @@ public class PlayerSetup : NetworkBehaviour {
 
     private void OnDestroy()
     {
-        playersManager.RemovePlayer(transform.GetSiblingIndex(), myPlayer);
+        //playersManager.RemovePlayer(transform.GetSiblingIndex(), myPlayer);
     }
 
 }

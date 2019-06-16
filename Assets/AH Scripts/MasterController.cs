@@ -55,7 +55,7 @@ public class MasterController : MonoBehaviour
             HealthTemp = CurrentPlayer.GetComponent<vHealthController>();
             if (CurrentPlayer.GetComponent<PlayerSetup>().isServer)
             {
-                net.waitingPannel.SetActive(false);
+                //net.waitingPannel.SetActive(false);
             }
         }
 
