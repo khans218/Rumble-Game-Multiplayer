@@ -14,16 +14,12 @@ public class SphereManager : MonoBehaviour {
     void Start () {
         Physics.IgnoreCollision(this.transform.GetComponentInParent<CapsuleCollider>(), GetComponent<Collider>(),true);
         master = GameObject.Find("MasterController").GetComponent<MasterController>();
+        setup = GetComponentInParent<PlayerSetup>();
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!setup.isLocalPlayer) return;
+        if (!setup.owner.isLocalPlayer) return;
         if (other.GetComponent<CustomEnemyManager>())
         {
             master.ScorePlusPlus();

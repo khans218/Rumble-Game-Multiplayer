@@ -11,11 +11,14 @@ public class MainMenuController : MonoBehaviour
     public GameObject matchMenu;
     public GameObject selectionMenu;
     public MyNetManager netManager;
-    public Text Name;
-    public Text IP;
-    public Text RoomName;
+    public InputField Name;
+    public InputField RoomName;
+    public GameObject MatchButton;
+    public GameObject RoomList;
+    Dictionary<string, RoomData> Rooms = new Dictionary<string, RoomData>();
 	int Counter = 0;
 	GameObject CurrentPrefab;
+    public GameObject[] NetworkPlayerPrefabs;
 
 	// Use this for initialization
 	void Start ()
@@ -27,27 +30,65 @@ public class MainMenuController : MonoBehaviour
 		FigureSelect ();
 	}
 
-    public void SetRoomName()
+    public void AddRoom(string address, string data)
+    {
+        int index = data.IndexOf(":");
+        string roomName = data.Substring(0, index);
+        int players = int.Parse(data.Substring(index + 1, data.Length - index - 1));
+        if (Rooms.ContainsKey(address))
+        {
+            RoomData room = Rooms[address];
+            if (room.getPlayersCount() != players)
+            {
+                room.UpdatePlayers(players);
+            }
+        }
+        else
+        {
+            GameObject button = Instantiate(MatchButton);
+            button.transform.SetParent(RoomList.transform);
+            button.transform.localScale = new Vector3(1, 1, 1);
+            RoomData room = button.GetComponent<RoomData>();
+            room.SetupRoom(roomName, address, players, this);
+            Rooms.Add(address, room);
+        }
+    }
+
+    public void Refresh()
+    {
+        ClearRooms();
+        netManager.SearchMatch();
+    }
+
+    void ClearRooms()
+    {
+        Rooms.Clear();
+        for (int i = 0; i < RoomList.transform.childCount; i++)
+        {
+            Destroy(RoomList.transform.GetChild(i).gameObject);
+        }
+    }
+
+    void SetRoomName()
     {
         PlayerPrefs.SetString("RoomName", RoomName.text);
     }
 
     public void StartHost()
     {
+        SetRoomName();
+        if (PlayerPrefs.GetString("RoomName") == null || PlayerPrefs.GetString("RoomName") == "") return;
+        LoadingPanel.SetActive(true);
         netManager.StartHost();
     }
 
-    public void Search()
+    public void Join(string address)
     {
-        netManager.SearchMatch();
+        LoadingPanel.SetActive(true);
+        netManager.JoinMatch(address);
     }
 
-    public void Join()
-    {
-        netManager.JoinMatch(IP.text);
-    }
-
-    public void SetName()
+    void SetName()
     {
         PlayerPrefs.SetString("PlayerName", Name.text);
     }
@@ -76,10 +117,12 @@ public class MainMenuController : MonoBehaviour
 	{
         Destroy (CurrentPrefab);
         CurrentPrefab = Instantiate (PlayerPrefabs [Counter], Vector3.zero, Quaternion.identity);
-	}
+    }
 
     public void EnableMatchMenu()
     {
+        SetName();
+        if (PlayerPrefs.GetString("PlayerName") == null || PlayerPrefs.GetString("PlayerName") == "") return;
         selectionMenu.SetActive(false);
         matchMenu.SetActive(true);
     }

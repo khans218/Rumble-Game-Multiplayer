@@ -10,7 +10,7 @@ public class MasterController : MonoBehaviour
 
 	public GameObject[] PlayerPrefabs;
 	public GameObject[] EnemyPrefabs;
-	[HideInInspector]public GameObject CurrentPlayer;
+	public GameObject CurrentPlayer;
 	Invector.vHealthController HealthTemp;
 	public Transform SpawnPoint;
 	int Score = 0;
@@ -21,6 +21,11 @@ public class MasterController : MonoBehaviour
 	public GameObject HighscoreMessage;
 	public GameObject LoadingPanel;
     public NetworkController net;
+    public DiscoveryController discovery;
+    public PlayersManager playersManager;
+    public Transform playerListPannel;
+    public bool isHost = false;
+    public GameObject owner;
 
     void Awake ()
 	{
@@ -53,10 +58,6 @@ public class MasterController : MonoBehaviour
         {
             if (CurrentPlayer == null) return;
             HealthTemp = CurrentPlayer.GetComponent<vHealthController>();
-            if (CurrentPlayer.GetComponent<PlayerSetup>().isServer)
-            {
-                //net.waitingPannel.SetActive(false);
-            }
         }
 
 		if (HealthTemp.currentHealth <= 0) {

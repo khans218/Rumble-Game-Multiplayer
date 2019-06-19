@@ -16,14 +16,12 @@ public class CustomEnemyManager : MonoBehaviour {
     void Start () {
         HealthTemp = this.transform.GetComponentInParent<Invector.vHealthController>();
         Col = this.transform.GetComponentInParent<CapsuleCollider>();
-
     }
-	
-	// Update is called once per frame
-	void Update () {
 
-	}
-
+    private void OnEnable()
+    {
+        thirdPersonController = GetComponentInParent<Invector.vCharacterController.vThirdPersonController>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {

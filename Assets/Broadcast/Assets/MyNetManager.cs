@@ -7,40 +7,58 @@ public class MyNetManager : NetworkManager
 {
 
     public NetworkDiscovery discovery;
-    NetworkManager manager;
+    public InputField IP;
 
-    private void Start()
+    public void JoinGameBroadcastTest()
     {
-        manager = NetworkManager.singleton;
+        networkPort = 7777;
+        networkAddress = IP.text;
+        StartClient();
     }
 
     public void JoinMatch(string IP)
     {
-        manager.networkPort = 7777;
-        manager.networkAddress = IP;
-        manager.StartClient();
+        networkPort = 7777;
+        networkAddress = IP;
+        StartClient();
+    }
+
+    public void StartGame()
+    {
+        StartHost();
+        discovery.Initialize();
+        discovery.StartAsServer();
+    }
+
+    private void OnFailedToConnect(NetworkConnectionError error)
+    {
     }
 
     public void SearchMatch()
+    {
+        if (discovery.running)
+        {
+            discovery.StopBroadcast();
+            discovery.running = false;
+        }
+        Invoke("listenBroadcast", 1f);
+    }
+
+    void listenBroadcast()
     {
         discovery.Initialize();
         discovery.StartAsClient();
     }
 
-    public override void OnStartHost()
-	{
-		discovery.Initialize();
-        discovery.StartAsServer();
-    }
-
 	public override void OnStartClient(NetworkClient client)
 	{
+        if (discovery.running) { discovery.StopBroadcast(); }
         //discovery.showGUI = false;
 	}
 
 	public override void OnStopClient()
 	{
-		discovery.StopBroadcast();
+        if (discovery.running) { discovery.StopBroadcast(); }
 		//discovery.showGUI = true;
 	}
 

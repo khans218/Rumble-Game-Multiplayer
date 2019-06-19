@@ -5,6 +5,8 @@ using UnityEngine.Networking;
 
 public class DiscoveryController : NetworkDiscovery {
 
+    public MainMenuController menu;
+
     public void Awake()
     {
         DontDestroyOnLoad(this);
@@ -16,9 +18,12 @@ public class DiscoveryController : NetworkDiscovery {
 
     public override void OnReceivedBroadcast(string fromAddress, string data)
     {
-        base.OnReceivedBroadcast(fromAddress, data);
-        Debug.Log(fromAddress);
-        Debug.Log(data);
+        if (menu == null)
+        {
+            menu = GameObject.Find("MainMenuController").GetComponent<MainMenuController>();
+            if (menu == null) return;
+        }
+        menu.AddRoom(fromAddress, data);
     }
 
 }

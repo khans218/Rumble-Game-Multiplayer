@@ -4,44 +4,22 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-
-
 public class PlayerSetup : NetworkBehaviour {
 
     [SerializeField]
     Behaviour[] ComponentsToDisable;
     NetworkAnimator netAnim;
     MasterController master;
-    PlayersManager playersManager;
-
-    public class PlayerInfo
-    {
-        string name;
-        GameObject prefab;
-
-        public PlayerInfo(string _name, GameObject _prefab)
-        {
-            name = _name;
-            prefab = _prefab;
-        }
-
-        public string getName() { return name; }
-        public GameObject getPrefab() { return prefab; }
-    }
-    PlayerInfo myPlayer;
-    public Text name;
+    [SyncVar]
+    public GameObject ownerObj;
+    public NetworkPlayer owner;
 
     // Use this for initialization
     void Start () {
-        //playersManager = GameObject.Find("PlayerList").GetComponent<PlayersManager>();
-        //transform.parent = playersManager.transform;
-
-        //myPlayer = new PlayerInfo(name.text, this.gameObject);
-        //playersManager.AddPlayer(myPlayer);
-
         netAnim = GetComponent<NetworkAnimator>();
-
-        if (!isLocalPlayer)
+        owner = ownerObj.GetComponent<NetworkPlayer>();
+        GetComponentInChildren<Text>().text = owner.getInfo().PlayerName;
+        if (!owner.isLocalPlayer)
         {
             this.tag = "Enemy";
             this.gameObject.layer = 9;
@@ -52,19 +30,14 @@ public class PlayerSetup : NetworkBehaviour {
         } else
         {
             master = GameObject.Find("MasterController").GetComponent<MasterController>();
-            master.CurrentPlayer = this.gameObject;
+            master.CurrentPlayer = gameObject;
         }
-	}
+    }
 
     public void AttackTrigger()
     {
-        if (!isLocalPlayer) return;
+        if (!owner.isLocalPlayer) return;
         netAnim.SetTrigger("StrongAttack");
-    }
-
-    private void OnDestroy()
-    {
-        //playersManager.RemovePlayer(transform.GetSiblingIndex(), myPlayer);
     }
 
 }
