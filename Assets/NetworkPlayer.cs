@@ -23,7 +23,7 @@ public class NetworkPlayer : NetworkBehaviour {
             if (master.net.isGameStarted())
             {
                 //game already started so leave the game
-                master.net.LeaveGame();
+                //master.net.LeaveGame();
             }
             if (isServer)
             {
@@ -59,6 +59,10 @@ public class NetworkPlayer : NetworkBehaviour {
     {
         myInfo = player;
         myInfo.owner = gameObject;
+        if (!master.net.isGameStarted())
+        {
+            master.net.SpawnPlayer(transform.GetSiblingIndex());
+        }
         isSetup = true;
     }
 

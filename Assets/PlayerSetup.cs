@@ -13,10 +13,13 @@ public class PlayerSetup : NetworkBehaviour {
     [SyncVar]
     public GameObject ownerObj;
     public NetworkPlayer owner;
+    int index;
 
     // Use this for initialization
     void Start () {
+        master = GameObject.Find("MasterController").GetComponent<MasterController>();
         netAnim = GetComponent<NetworkAnimator>();
+        index = ownerObj.transform.GetSiblingIndex();
         owner = ownerObj.GetComponent<NetworkPlayer>();
         GetComponentInChildren<Text>().text = owner.getInfo().PlayerName;
         if (!owner.isLocalPlayer)
@@ -29,8 +32,19 @@ public class PlayerSetup : NetworkBehaviour {
             }
         } else
         {
-            master = GameObject.Find("MasterController").GetComponent<MasterController>();
             master.CurrentPlayer = gameObject;
+        }
+    }
+
+    private void Update()
+    {
+        if (master.net.isGameStarted()) return;
+        if (index != ownerObj.transform.GetSiblingIndex())
+        {
+            index = ownerObj.transform.GetSiblingIndex();
+            Vector3 pos = master.playersManager.spawnPoints[index].position;
+            transform.position = pos;
+            transform.forward = -pos;
         }
     }
 

@@ -29,6 +29,17 @@ public class NetworkController : NetworkBehaviour {
         }
     }
 
+    public void SpawnPlayer(int index)
+    {
+        PlayerInfo player = master.playerListPannel.transform.GetChild(index).gameObject.GetComponent<NetworkPlayer>().getInfo();
+        GameObject obj = Instantiate(manager.spawnPrefabs[player.PrefabIndex]);
+        obj.GetComponent<PlayerSetup>().ownerObj = player.owner;
+        Vector3 pos = master.playersManager.spawnPoints[index].position;
+        obj.transform.position = pos;
+        obj.transform.forward = -pos;
+        NetworkServer.SpawnWithClientAuthority(obj, player.owner);
+    }
+
     [ClientRpc]
     public void RpcStartGame()
     {
@@ -37,6 +48,7 @@ public class NetworkController : NetworkBehaviour {
         {
             if (master.discovery.running) { master.discovery.StopBroadcast(); }
             GameStarted = true;
+            /*
             for (int i = 0; i < master.playerListPannel.transform.childCount; i++)
             {
                 PlayerInfo player = master.playerListPannel.transform.GetChild(i).gameObject.GetComponent<NetworkPlayer>().getInfo();
@@ -47,6 +59,7 @@ public class NetworkController : NetworkBehaviour {
                 obj.transform.forward = -pos;
                 NetworkServer.SpawnWithClientAuthority(obj, player.owner);
             }
+            */
         }
     }
 
