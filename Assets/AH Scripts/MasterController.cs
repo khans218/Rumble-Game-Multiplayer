@@ -26,6 +26,7 @@ public class MasterController : MonoBehaviour
     public Transform playerListPannel;
     public bool isHost = false;
     public GameObject owner;
+    public int PlayerCount;
 
     void Awake ()
 	{

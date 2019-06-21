@@ -21,7 +21,7 @@ public class NetworkController : NetworkBehaviour {
 
     private void Update()
     {
-        if (!isServer || GameStarted) return;
+        if (!isServer) return;
         if (master.playerListPannel.childCount != playerCount)
         {
             playerCount = master.playerListPannel.childCount;
@@ -46,7 +46,7 @@ public class NetworkController : NetworkBehaviour {
         StartPannel.SetActive(false);
         if (master.isHost)
         {
-            if (master.discovery.running) { master.discovery.StopBroadcast(); }
+            //if (master.discovery.running) { master.discovery.StopBroadcast(); }
             GameStarted = true;
             /*
             for (int i = 0; i < master.playerListPannel.transform.childCount; i++)

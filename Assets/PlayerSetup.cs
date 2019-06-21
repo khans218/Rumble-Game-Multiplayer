@@ -18,6 +18,7 @@ public class PlayerSetup : NetworkBehaviour {
     // Use this for initialization
     void Start () {
         master = GameObject.Find("MasterController").GetComponent<MasterController>();
+        master.PlayerCount++;
         netAnim = GetComponent<NetworkAnimator>();
         index = ownerObj.transform.GetSiblingIndex();
         owner = ownerObj.GetComponent<NetworkPlayer>();
@@ -46,6 +47,11 @@ public class PlayerSetup : NetworkBehaviour {
             transform.position = pos;
             transform.forward = -pos;
         }
+    }
+
+    private void OnDestroy()
+    {
+        master.PlayerCount--;
     }
 
     public void AttackTrigger()

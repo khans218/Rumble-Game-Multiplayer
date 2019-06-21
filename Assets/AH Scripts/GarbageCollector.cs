@@ -19,6 +19,18 @@ public class GarbageCollector : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.tag == "MyEnemyTag" || other.tag == "OtherEnemyTag" || other.tag == "Player")
+        {
+            if (other.transform.parent == null)
+            {
+                Destroy(other.gameObject);
+            } else
+            {
+                Destroy(other.transform.parent.gameObject);
+            }
+        }
+
+        /*
         if (other.tag == "MyEnemyTag")
         {
             Destroy(other.gameObject.transform.parent.gameObject);
@@ -40,6 +52,7 @@ public class GarbageCollector : MonoBehaviour {
                 MasterTemp.CallGameOver(2);
             }
         }
+        */
 
     }
 
