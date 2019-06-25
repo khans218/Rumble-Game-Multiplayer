@@ -1,20 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 
 public class MyNetManager : NetworkManager
 {
-
     public NetworkDiscovery discovery;
-    public InputField IP;
-
-    public void JoinGameBroadcastTest()
-    {
-        networkPort = 7777;
-        networkAddress = IP.text;
-        StartClient();
-    }
 
     public void JoinMatch(string IP)
     {
@@ -30,8 +20,17 @@ public class MyNetManager : NetworkManager
         discovery.StartAsServer();
     }
 
-    private void OnFailedToConnect(NetworkConnectionError error)
+    public override void OnClientDisconnect(NetworkConnection conn)
     {
+        base.OnClientDisconnect(conn);
+        GameObject master = GameObject.Find("MasterController");
+        if (master != null)
+        {
+            master.GetComponent<MasterController>().ConnectionLostScreen.SetActive(true);
+        } else
+        {
+            //unable to join game
+        }
     }
 
     public void SearchMatch()

@@ -18,10 +18,11 @@ public class PlayerSetup : NetworkBehaviour {
     // Use this for initialization
     void Start () {
         master = GameObject.Find("MasterController").GetComponent<MasterController>();
-        master.PlayerCount++;
+        master.PlayerPrefabs.Add(gameObject);
         netAnim = GetComponent<NetworkAnimator>();
         index = ownerObj.transform.GetSiblingIndex();
         owner = ownerObj.GetComponent<NetworkPlayer>();
+        owner.CurrentPlayer = gameObject;
         GetComponentInChildren<Text>().text = owner.getInfo().PlayerName;
         if (!owner.isLocalPlayer)
         {
@@ -43,15 +44,23 @@ public class PlayerSetup : NetworkBehaviour {
         if (index != ownerObj.transform.GetSiblingIndex())
         {
             index = ownerObj.transform.GetSiblingIndex();
-            Vector3 pos = master.playersManager.spawnPoints[index].position;
+            Vector3 pos = master.net.spawnPoints[index].position;
             transform.position = pos;
             transform.forward = -pos;
+        }
+        if (GetComponentInChildren<Text>().text != owner.getInfo().PlayerName)
+        {
+            GetComponentInChildren<Text>().text = owner.getInfo().PlayerName;
         }
     }
 
     private void OnDestroy()
     {
-        master.PlayerCount--;
+        if (owner != null && owner.isLocalPlayer)
+        {
+            owner.CmdRankMe(master.getScore());
+        }
+        master.PlayerPrefabs.Remove(gameObject);
     }
 
     public void AttackTrigger()

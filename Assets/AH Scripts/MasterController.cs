@@ -8,7 +8,7 @@ using Invector;
 public class MasterController : MonoBehaviour
 {
 
-	public GameObject[] PlayerPrefabs;
+	public List<GameObject> PlayerPrefabs = new List<GameObject>();
 	public GameObject[] EnemyPrefabs;
 	public GameObject CurrentPlayer;
 	Invector.vHealthController HealthTemp;
@@ -16,17 +16,18 @@ public class MasterController : MonoBehaviour
 	int Score = 0;
 	public Text ScoreDisplay;
 	public GameObject GameOverPanel;
-	public Text GameOverScoreText;
 	public Text GameOverHighscoreText;
 	public GameObject HighscoreMessage;
 	public GameObject LoadingPanel;
     public NetworkController net;
     public DiscoveryController discovery;
-    public PlayersManager playersManager;
     public Transform playerListPannel;
+    public GameObject ConnectionLostScreen;
     public bool isHost = false;
     public GameObject owner;
-    public int PlayerCount;
+    bool GameOverCalled = false;
+    bool RankVisible = false;
+    bool dead = false;
 
     void Awake ()
 	{
@@ -54,20 +55,45 @@ public class MasterController : MonoBehaviour
 		if (Input.GetKeyDown (KeyCode.P)) {
 			Time.timeScale = 1f;
 		}
-
+        if (net.isGameStarted() && !net.GameOver)
+        {
+            if (PlayerPrefabs.Count == 1)
+            {
+                PlayerPrefabs[0].GetComponent<vHealthController>().CustomCurrentHealth(0f);
+            } else if (PlayerPrefabs.Count == 0 && isHost && !GameOverCalled)
+            {
+                GameOverCalled = true;
+                Invoke("CallGameOver", 2f);
+            }
+        } else if (net.GameOver && !RankVisible)
+        {
+            RankVisible = true;
+            GameOver();
+        }
         if (HealthTemp == null)
         {
             if (CurrentPlayer == null) return;
             HealthTemp = CurrentPlayer.GetComponent<vHealthController>();
         }
-
-		if (HealthTemp.currentHealth <= 0) {
-			CallGameOver (5);
+		if (HealthTemp.currentHealth <= 0 && !dead) {
+            //CallGameOver (5);
+            dead = true;
+            Invoke("DestroyCurrentPlayer", 1f);
 		}
 
 	}
 
-	public void CallNewEnemyCreation ()
+    void DestroyCurrentPlayer()
+    {
+        owner.GetComponent<NetworkPlayer>().CmdDestroyPlayer();
+    }
+
+    public int getScore()
+    {
+        return Score;
+    }
+
+    public void CallNewEnemyCreation ()
 	{
 		Invoke ("CreateNewEnemy", 1f);
 	}
@@ -82,27 +108,35 @@ public class MasterController : MonoBehaviour
 		Score += 1;
 	}
 
-	public void CallGameOver (float x)
+	public void CallGameOver ()
 	{
-		Invoke ("GameOver", x);
+        net.GameOver = true;
 	}
 
 	void GameOver ()
 	{
-
-		Time.timeScale = 0f;
+        //Time.timeScale = 0f;
 
 		if (Score > PlayerPrefs.GetInt ("highscore")) {
 			PlayerPrefs.SetInt ("highscore", Score);
 			HighscoreMessage.SetActive (true);
 		}
 
-		GameOverScoreText.text = Score.ToString ();
 		GameOverHighscoreText.text = PlayerPrefs.GetInt ("highscore").ToString ();
-
+        net.UpdateRanking();
 		GameOverPanel.SetActive (true);
 
+        if (isHost)
+        {
+            net.GameOver = true;
+            Invoke("RestartGame", 5f);
+        }
 	}
+
+    void RestartGame()
+    {
+        net.RestartGame();
+    }
 
 	public void GameOverMenu (int x)
 	{

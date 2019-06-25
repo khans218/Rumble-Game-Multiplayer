@@ -15,14 +15,20 @@ public class MainMenuController : MonoBehaviour
     public InputField RoomName;
     public GameObject MatchButton;
     public GameObject RoomList;
-    Dictionary<string, RoomData> Rooms = new Dictionary<string, RoomData>();
+    SortedDictionary<string, RoomData> Rooms = new SortedDictionary<string, RoomData>();
 	int Counter = 0;
 	GameObject CurrentPrefab;
-    public GameObject[] NetworkPlayerPrefabs;
+    public GameObject TimeoutScreen;
+    public GameObject ConnectionLostScreen;
+    public GameObject Canvas;
 
 	// Use this for initialization
 	void Start ()
 	{
+        if (!GameObject.FindObjectOfType<ErrorScreenDestroyer>())
+        {
+            Canvas.SetActive(true);
+        }
         netManager = GameObject.Find("NetworkManager").GetComponent<MyNetManager>();
         RoomName.text = PlayerPrefs.GetString("RoomName");
         Counter = PlayerPrefs.GetInt ("selectedplayer");

@@ -6,13 +6,20 @@ using UnityEngine.UI;
 
 public class NetworkController : NetworkBehaviour {
 
+    SortedDictionary<int, List<NetworkPlayer> > Ranking = new SortedDictionary<int, List<NetworkPlayer>>();
+
     public GameObject waitingPannel;
     public GameObject StartPannel;
     public MasterController master;
     NetworkManager manager;
     [SyncVar]
     bool GameStarted = false;
+    [SyncVar]
+    public bool GameOver = false;
     int playerCount = 0;
+    public Transform[] spawnPoints;
+    public Transform RankingPannel;
+    public GameObject RankInfo;
 
     private void Start()
     {
@@ -29,42 +36,74 @@ public class NetworkController : NetworkBehaviour {
         }
     }
 
+    public void RestartGame()
+    {
+        manager.ServerChangeScene("TestSceneNew");
+    }
+
     public void SpawnPlayer(int index)
     {
         PlayerInfo player = master.playerListPannel.transform.GetChild(index).gameObject.GetComponent<NetworkPlayer>().getInfo();
         GameObject obj = Instantiate(manager.spawnPrefabs[player.PrefabIndex]);
         obj.GetComponent<PlayerSetup>().ownerObj = player.owner;
-        Vector3 pos = master.playersManager.spawnPoints[index].position;
+        Vector3 pos = spawnPoints[index].position;
         obj.transform.position = pos;
         obj.transform.forward = -pos;
         NetworkServer.SpawnWithClientAuthority(obj, player.owner);
     }
 
+    public void AddPlayerToRank(int score, NetworkPlayer player)
+    {
+        if (Ranking.ContainsKey(score))
+        {
+            List<NetworkPlayer> players = Ranking[score];
+            players.Add(player);
+        } else
+        {
+            Debug.Log("new Entry");
+            List<NetworkPlayer> players = new List<NetworkPlayer>();
+            players.Add(player);
+            Ranking.Add(score, players);
+        }
+    }
+
+    public void UpdateRanking()
+    {
+        foreach(KeyValuePair<int, List<NetworkPlayer>> pair in Ranking)
+        {
+            foreach(NetworkPlayer player in pair.Value)
+            {
+                if (player != null)
+                {
+                    GameObject rank = Instantiate(RankInfo);
+                    rank.GetComponent<PlayerScoreSetter>().SetScore(player.getInfo().PlayerName, pair.Key, player.isLocalPlayer);
+                    rank.transform.SetParent(RankingPannel);
+                    rank.transform.localScale = new Vector3(1f, 1f, 1f);
+                    rank.transform.SetAsFirstSibling();
+                }
+            }
+        }
+    }
+
+    public void StartGame()
+    {
+        if (playerCount > 1)
+        {
+            RpcStartGame();
+        }
+    }
+
     [ClientRpc]
-    public void RpcStartGame()
+    void RpcStartGame()
     {
         StartPannel.SetActive(false);
         if (master.isHost)
         {
-            //if (master.discovery.running) { master.discovery.StopBroadcast(); }
             GameStarted = true;
-            /*
-            for (int i = 0; i < master.playerListPannel.transform.childCount; i++)
-            {
-                PlayerInfo player = master.playerListPannel.transform.GetChild(i).gameObject.GetComponent<NetworkPlayer>().getInfo();
-                GameObject obj = Instantiate(manager.spawnPrefabs[player.PrefabIndex]);
-                obj.GetComponent<PlayerSetup>().ownerObj = player.owner;
-                Vector3 pos = master.playersManager.spawnPoints[i].position;
-                obj.transform.position = pos;
-                obj.transform.forward = -pos;
-                NetworkServer.SpawnWithClientAuthority(obj, player.owner);
-            }
-            */
         }
     }
 
     public bool isGameStarted() { return GameStarted; }
-
 
     void ResetBroadcast()
     {

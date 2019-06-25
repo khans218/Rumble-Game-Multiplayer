@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Invector;
 
 public class GarbageCollector : MonoBehaviour {
 
@@ -19,17 +20,19 @@ public class GarbageCollector : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
+        GameObject par = null;
         if (other.tag == "MyEnemyTag" || other.tag == "OtherEnemyTag" || other.tag == "Player")
         {
             if (other.transform.parent == null)
             {
-                Destroy(other.gameObject);
+                par = other.gameObject;
             } else
             {
-                Destroy(other.transform.parent.gameObject);
+                par = other.transform.parent.gameObject;
             }
         }
-
+        if (par == null || !par.GetComponent<vHealthController>()) return;
+        par.GetComponent<vHealthController>().CustomCurrentHealth(0f);
         /*
         if (other.tag == "MyEnemyTag")
         {
