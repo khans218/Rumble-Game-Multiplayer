@@ -26,6 +26,7 @@ public class NetworkPlayer : NetworkBehaviour {
         if (master.net.isGameStarted() && master.net.StartPannel.activeSelf)
         {
             master.net.StartPannel.SetActive(false);
+            master.EnableSpectateMode();
         }
         transform.SetParent(master.playerListPannel);
         transform.localScale = new Vector3(1, 1, 1);

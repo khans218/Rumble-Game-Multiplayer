@@ -54,6 +54,9 @@ public class PlayerSetup : NetworkBehaviour {
         }
     }
 
+    public void DisableControl() { 
+}
+
     private void OnDestroy()
     {
         if (owner != null && owner.isLocalPlayer)

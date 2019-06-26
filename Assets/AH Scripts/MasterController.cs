@@ -28,6 +28,8 @@ public class MasterController : MonoBehaviour
     bool GameOverCalled = false;
     bool RankVisible = false;
     bool dead = false;
+    public GameObject spectatingPrompt;
+    public Image[] ControlImages;
 
     void Awake ()
 	{
@@ -48,6 +50,10 @@ public class MasterController : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            net.HostEndGamePannel.SetActive(true);
+        }
 		ScoreDisplay.text = "SCORE: " + Score.ToString ();
 		if (Input.GetKeyDown (KeyCode.O)) {
 			Time.timeScale = 0.2f;
@@ -72,7 +78,7 @@ public class MasterController : MonoBehaviour
         }
         if (HealthTemp == null)
         {
-            if (CurrentPlayer == null) return;
+            if (CurrentPlayer == null) { return; }
             HealthTemp = CurrentPlayer.GetComponent<vHealthController>();
         }
 		if (HealthTemp.currentHealth <= 0 && !dead) {
@@ -80,11 +86,20 @@ public class MasterController : MonoBehaviour
             dead = true;
             Invoke("DestroyCurrentPlayer", 1f);
 		}
-
 	}
+
+    public void EnableSpectateMode()
+    {
+        foreach(Image image in ControlImages)
+        {
+            image.enabled = false;
+        }
+        spectatingPrompt.SetActive(true);
+    }
 
     void DestroyCurrentPlayer()
     {
+        EnableSpectateMode();
         owner.GetComponent<NetworkPlayer>().CmdDestroyPlayer();
     }
 
@@ -116,6 +131,7 @@ public class MasterController : MonoBehaviour
 	void GameOver ()
 	{
         //Time.timeScale = 0f;
+        spectatingPrompt.SetActive(false);
 
 		if (Score > PlayerPrefs.GetInt ("highscore")) {
 			PlayerPrefs.SetInt ("highscore", Score);
@@ -137,20 +153,6 @@ public class MasterController : MonoBehaviour
     {
         net.RestartGame();
     }
-
-	public void GameOverMenu (int x)
-	{
-		switch (x) {
-		case 0: //Restart
-			LoadingPanel.SetActive (true);
-			SceneManager.LoadSceneAsync (SceneManager.GetActiveScene ().buildIndex);
-			break;
-		case 1: //Exit
-			LoadingPanel.SetActive (true);
-			SceneManager.LoadSceneAsync (0);
-			break;
-		}
-	}
 
 	public void PlayerAttack ()
 	{

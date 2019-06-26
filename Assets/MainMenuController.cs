@@ -19,7 +19,6 @@ public class MainMenuController : MonoBehaviour
 	int Counter = 0;
 	GameObject CurrentPrefab;
     public GameObject TimeoutScreen;
-    public GameObject ConnectionLostScreen;
     public GameObject Canvas;
 
 	// Use this for initialization
@@ -35,6 +34,12 @@ public class MainMenuController : MonoBehaviour
         Name.text = PlayerPrefs.GetString("PlayerName");
 		FigureSelect ();
 	}
+
+    public void DisableTimeoutScreen()
+    {
+        TimeoutScreen.SetActive(false);
+        EnablePlayerSelectionMenu();
+    }
 
     public void AddRoom(string address, string data)
     {
@@ -131,19 +136,18 @@ public class MainMenuController : MonoBehaviour
         if (PlayerPrefs.GetString("PlayerName") == null || PlayerPrefs.GetString("PlayerName") == "") return;
         selectionMenu.SetActive(false);
         matchMenu.SetActive(true);
+        Refresh();
     }
 
     public void EnablePlayerSelectionMenu()
     {
         matchMenu.SetActive(false);
         selectionMenu.SetActive(true);
+        if (netManager.discovery.running)
+        {
+            netManager.discovery.StopBroadcast();
+        }
     }
-
-	public void Play ()
-	{
-		LoadingPanel.SetActive (true);
-		SceneManager.LoadSceneAsync (1);
-	}
 
 
 }

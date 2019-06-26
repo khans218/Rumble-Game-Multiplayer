@@ -98,6 +98,18 @@ public class InvectorJoystick : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
     public void OnPointerDown(PointerEventData data) { }
 
+    public void DisableAxes()
+    {
+        if (m_UseX)
+        {
+            m_HorizontalVirtualAxis.Remove();
+        }
+        if (m_UseY)
+        {
+            m_VerticalVirtualAxis.Remove();
+        }
+    }
+
     void OnDisable()
     {
         // remove the joysticks from the cross platform input

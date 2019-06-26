@@ -20,6 +20,7 @@ public class NetworkController : NetworkBehaviour {
     public Transform[] spawnPoints;
     public Transform RankingPannel;
     public GameObject RankInfo;
+    public GameObject HostEndGamePannel;
 
     private void Start()
     {
@@ -28,7 +29,7 @@ public class NetworkController : NetworkBehaviour {
 
     private void Update()
     {
-        if (!isServer) return;
+        if (!isServer || HostEndGamePannel.activeSelf) return;
         if (master.playerListPannel.childCount != playerCount)
         {
             playerCount = master.playerListPannel.childCount;
@@ -60,7 +61,6 @@ public class NetworkController : NetworkBehaviour {
             players.Add(player);
         } else
         {
-            Debug.Log("new Entry");
             List<NetworkPlayer> players = new List<NetworkPlayer>();
             players.Add(player);
             Ranking.Add(score, players);
@@ -121,12 +121,19 @@ public class NetworkController : NetworkBehaviour {
 
     public void LeaveGame()
     {
-        master.LoadingPanel.SetActive(true);
         if (master.isHost)
         {
-            RpcEndGame();
+            if (HostEndGamePannel.activeSelf)
+            {
+                master.LoadingPanel.SetActive(true);
+                manager.StopHost();
+            } else
+            {
+                RpcEndGame();
+            }
         } else
         {
+            master.LoadingPanel.SetActive(true);
             manager.StopClient();
         }
     }
@@ -134,12 +141,15 @@ public class NetworkController : NetworkBehaviour {
     [ClientRpc]
     public void RpcEndGame()
     {
-        //put some extra code to let players know host has ended game
         if (master.isHost && master.discovery.running)
         {
             master.discovery.StopBroadcast();
         }
-        manager.StopHost();
+        if (StartPannel.activeSelf)
+        {
+            StartPannel.SetActive(false);
+        }
+        HostEndGamePannel.SetActive(true);
     }
 
 }

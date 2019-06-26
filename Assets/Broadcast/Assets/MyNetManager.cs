@@ -6,6 +6,12 @@ public class MyNetManager : NetworkManager
 {
     public NetworkDiscovery discovery;
 
+    private void Start()
+    {
+        StartClient();
+        StopClient();
+    }
+
     public void JoinMatch(string IP)
     {
         networkPort = 7777;
@@ -23,13 +29,15 @@ public class MyNetManager : NetworkManager
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
-        GameObject master = GameObject.Find("MasterController");
+        MasterController master = GameObject.FindObjectOfType<MasterController>();
         if (master != null)
         {
-            master.GetComponent<MasterController>().ConnectionLostScreen.SetActive(true);
+            master.ConnectionLostScreen.SetActive(true);
         } else
         {
-            //unable to join game
+            MainMenuController menu = GameObject.FindObjectOfType<MainMenuController>();
+            menu.TimeoutScreen.SetActive(true);
+            menu.LoadingPanel.SetActive(false);
         }
     }
 
