@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 public class MyNetManager : NetworkManager
 {
     public NetworkDiscovery discovery;
+    bool SearchInvoked = false;
 
     private void Start()
     {
@@ -43,18 +44,21 @@ public class MyNetManager : NetworkManager
 
     public void SearchMatch()
     {
+        if (SearchInvoked) return;
         if (discovery.running)
         {
             discovery.StopBroadcast();
             discovery.running = false;
         }
-        Invoke("listenBroadcast", 1f);
+        SearchInvoked = true;
+        Invoke("listenBroadcast", 0.1f);
     }
 
     void listenBroadcast()
     {
         discovery.Initialize();
         discovery.StartAsClient();
+        SearchInvoked = false;
     }
 
 	public override void OnStartClient(NetworkClient client)

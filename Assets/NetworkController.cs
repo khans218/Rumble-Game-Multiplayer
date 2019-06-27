@@ -21,6 +21,7 @@ public class NetworkController : NetworkBehaviour {
     public Transform RankingPannel;
     public GameObject RankInfo;
     public GameObject HostEndGamePannel;
+    bool BroadcastInvoked = false;
 
     private void Start()
     {
@@ -107,9 +108,11 @@ public class NetworkController : NetworkBehaviour {
 
     void ResetBroadcast()
     {
+        if (BroadcastInvoked) return;
         if (master.discovery.running) { master.discovery.StopBroadcast(); }
         master.discovery.broadcastData =  PlayerPrefs.GetString("RoomName") + ":" + playerCount.ToString();
-        Invoke("Broadcast", 0.5f);
+        BroadcastInvoked = true;
+        Invoke("Broadcast", 0.1f);
     }
 
     void Broadcast()
@@ -117,6 +120,7 @@ public class NetworkController : NetworkBehaviour {
         if (master.discovery.running || !master.isHost) return;
         master.discovery.Initialize();
         master.discovery.StartAsServer();
+        BroadcastInvoked = false;
     }
 
     public void LeaveGame()

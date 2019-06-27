@@ -15,11 +15,12 @@ public class MainMenuController : MonoBehaviour
     public InputField RoomName;
     public GameObject MatchButton;
     public GameObject RoomList;
-    SortedDictionary<string, RoomData> Rooms = new SortedDictionary<string, RoomData>();
+    Dictionary<string, RoomData> Rooms = new Dictionary<string, RoomData>();
 	int Counter = 0;
 	GameObject CurrentPrefab;
     public GameObject TimeoutScreen;
     public GameObject Canvas;
+    public GameObject NotConnectedPrompt;
 
 	// Use this for initialization
 	void Start ()
@@ -34,6 +35,24 @@ public class MainMenuController : MonoBehaviour
         Name.text = PlayerPrefs.GetString("PlayerName");
 		FigureSelect ();
 	}
+
+    private void Update()
+    {
+        if (Network.player.ipAddress == "0.0.0.0")
+        {
+            if (!NotConnectedPrompt.activeSelf)
+            {
+                ClearRooms();
+                NotConnectedPrompt.SetActive(true);
+            }
+        } else
+        {
+            if (NotConnectedPrompt.activeSelf)
+            {
+                NotConnectedPrompt.SetActive(false);
+            }
+        }
+    }
 
     public void DisableTimeoutScreen()
     {
@@ -67,6 +86,7 @@ public class MainMenuController : MonoBehaviour
 
     public void Refresh()
     {
+        if (Network.player.ipAddress == "0.0.0.0") return;
         ClearRooms();
         netManager.SearchMatch();
     }
@@ -87,6 +107,7 @@ public class MainMenuController : MonoBehaviour
 
     public void StartHost()
     {
+        if (Network.player.ipAddress == "0.0.0.0") return;
         SetRoomName();
         if (PlayerPrefs.GetString("RoomName") == null || PlayerPrefs.GetString("RoomName") == "") return;
         LoadingPanel.SetActive(true);

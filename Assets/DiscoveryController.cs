@@ -23,7 +23,12 @@ public class DiscoveryController : NetworkDiscovery {
             menu = GameObject.Find("MainMenuController").GetComponent<MainMenuController>();
             if (menu == null) return;
         }
-        menu.AddRoom(fromAddress, data);
+        if (broadcastsReceived.ContainsKey(fromAddress))
+        {
+            int length = broadcastsReceived[fromAddress].broadcastData.Length / 2;
+            data = data.Substring(0, length);
+            menu.AddRoom(fromAddress, data);
+        }
     }
 
 }
